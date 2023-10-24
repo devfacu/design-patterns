@@ -21,7 +21,7 @@ public class MySQLDBAdapter implements IDBAdapter {
     static {
         //Bloque para registrar el Driver de MySQL
         try {
-            new com.mysql.jdbc.Driver();
+            new com.mysql.cj.jdbc.Driver();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -43,6 +43,7 @@ public class MySQLDBAdapter implements IDBAdapter {
 
     private String createConnectionString() {
         Properties prop = PropertiesUtil.loadProperty(DB_PROPERTIES);
+        assert prop != null;
         String host = prop.getProperty(DB_HOST_PROP);
         String port = prop.getProperty(DB_PORT_PROP);
         String db = prop.getProperty(DB_NAME_PROP);

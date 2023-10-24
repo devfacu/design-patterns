@@ -11,41 +11,35 @@ import oscarblancarte.ipd.factorymethod.entity.Product;
 
 public class ProductDAO {
     
-    private IDBAdapter dbAdapter;
+    private final IDBAdapter dbAdapter;
     
     public ProductDAO(){
         dbAdapter = DBFactory.getDefaultDBAdapter();
     }
     
     public List<Product> findAllProducts(){
-        Connection connection = dbAdapter.getConnection();
-        List<Product> productList = new ArrayList<>();
-        try {
+        try (Connection connection = dbAdapter.getConnection()) {
+            List<Product> productList = new ArrayList<>();
             PreparedStatement statement = connection
-                    .prepareStatement("SELECT idProductos,productName"
-                            + ",productPrice FROM Productos");
+                    .prepareStatement("SELECT idProduct,productName"
+                            + ",price FROM product");
             ResultSet results = statement.executeQuery();
-            while(results.next()){
-                productList.add(new Product(results.getLong(1), 
+            while (results.next()) {
+                productList.add(new Product(results.getLong(1),
                         results.getString(2), results.getDouble(3)));
             }
             return productList;
         } catch (Exception e) {
             e.printStackTrace();
             return null;
-        }finally{
-            try {
-                connection.close();
-            } catch (Exception e) {}
         }
     }
     
     public boolean saveProduct(Product product){
-        Connection connection = dbAdapter.getConnection();
-        try {
+        try (Connection connection = dbAdapter.getConnection()) {
             PreparedStatement statement = connection
-                    .prepareStatement("INSERT INTO Productos(idProductos,"
-                            + "productName,productPrice) VALUES (?,?,?)");
+                    .prepareStatement("INSERT INTO product(idProduct,"
+                            + "productName,price) VALUES (?,?,?)");
             statement.setLong(1, product.getIdProduct());
             statement.setString(2, product.getProductName());
             statement.setDouble(3, product.getPrice());
@@ -54,10 +48,6 @@ public class ProductDAO {
         } catch (Exception e) {
             e.printStackTrace();
             return false;
-        }finally{
-            try {
-                connection.close();
-            } catch (Exception e) {}
         }
     }
     
